@@ -28,9 +28,9 @@ jobs:
       
       - name: Update formula
         run: |
-          sed -i 's|url ".*"|url "${{ github.event.release.tarball_url }}"|' Formula/hello.rb
+          sed -i 's|url ".*"|url "${{ steps.sha.outputs.download_url }}"|' Formula/hello.rb
           sed -i 's|sha256 ".*"|sha256 "${{ steps.sha.outputs.sha256 }}"|' Formula/hello.rb
-          sed -i 's|version ".*"|version "${{ steps.release.outputs.version }}"|' Formula/hello.rb
+          sed -i 's|version ".*"|version "${{ steps.tag.outputs.version }}"|' Formula/hello.rb
       
       - name: Commit and push
         run: |
