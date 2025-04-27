@@ -1,21 +1,25 @@
 name: Update Homebrew Formula
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 jobs:
   update-formula:
     runs-on: ubuntu-latest
     steps:
-      - name: Get release info
-        id: release
+      - name: Get tag info
+        id: tag
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      
+        
       - name: Calculate SHA256
         id: sha
         run: |
-          curl -L ${{ github.event.release.tarball_url }} | shasum -a 256 | cut -d ' ' -f 1 > sha.txt
+          TAG=${GITHUB_REF#refs/tags/}
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz"
+          curl -L $DOWNLOAD_URL | shasum -a 256 | cut -d ' ' -f 1 > sha.txt
           echo "sha256=$(cat sha.txt)" >> $GITHUB_OUTPUT
-      
+          echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
+            
       - name: Checkout tap repository
         uses: actions/checkout@v3
         with:
